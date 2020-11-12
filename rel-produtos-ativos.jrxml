@@ -173,14 +173,14 @@ ORDER BY cat.desc_categoria, prod.desc_produto, prod.cod_produto]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{desc_produto}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="¤ #,##0.00">
 				<reportElement x="353" y="0" width="100" height="20" uuid="3d2c09b0-9394-41ae-804b-c421a64d3dd8"/>
 				<textElement>
 					<font fontName="Arial"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{valor_custo}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="¤ #,##0.00">
 				<reportElement x="453" y="0" width="100" height="20" uuid="2a35eb1f-14ba-46a1-9270-fba96954eb09"/>
 				<textElement>
 					<font fontName="Arial"/>

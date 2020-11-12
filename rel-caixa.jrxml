@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel-compras" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3ca85c7a-410c-407d-be95-426e1a2958f9">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel-caixa" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3ca85c7a-410c-407d-be95-426e1a2958f9">
 	<property name="ireport.zoom" value="1.1"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -7,54 +7,30 @@
 	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
 	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
 	<style name="Detail" fontName="Arial" fontSize="12"/>
-	<parameter name="prDataIni" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="prDataFim" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="prFornecedor" class="java.lang.String">
+	<parameter name="prDataUltimoFechamentoCaixa" class="java.sql.Timestamp">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT comp.*, forn.nome_fornecedor
-FROM   compras comp
-INNER JOIN fornecedores forn ON
-	forn.cod_fornecedor = comp.cod_fornecedor
-
-WHERE comp.ativo = true
-AND   CAST(comp.data AS DATE) >= $P{prDataIni}
-AND   CAST(comp.data AS DATE) <= $P{prDataFim}
-AND   $P!{prFornecedor}
-ORDER BY comp.data DESC;]]>
+		<![CDATA[SELECT
+       (SELECT COALESCE(SUM(cp.total_liquido), 0)
+		FROM   referencia_produto ref1
+        INNER JOIN produto_compra pc ON
+			pc.cod_rastreio_produto = ref1.cod_rastreio_produto
+		INNER JOIN compras cp ON
+			cp.cod_compra = pc.cod_compra
+		WHERE cp.data >= $P{prDataUltimoFechamentoCaixa}
+       ) AS COMPRAS,
+       (SELECT COALESCE(SUM(vd.valor_total), 0)
+        FROM   referencia_produto ref2
+        INNER JOIN produtos_venda pv ON
+			pv.cod_rastreio_produto = ref2.cod_rastreio_produto
+		INNER JOIN vendas vd ON
+			vd.cod_venda = pv.cod_venda
+		WHERE vd.data_venda >= $P{prDataUltimoFechamentoCaixa}
+       ) AS VENDAS]]>
 	</queryString>
-	<field name="cod_compra" class="java.lang.Integer">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="cod_fornecedor" class="java.lang.Integer">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="cod_usuario" class="java.lang.Integer">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="data" class="java.sql.Timestamp">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="total_bruto" class="java.lang.Double">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="desconto" class="java.lang.Double">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="total_liquido" class="java.lang.Double">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="ativo" class="java.lang.Boolean">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="nome_fornecedor" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
+	<field name="COMPRAS" class="java.lang.Double"/>
+	<field name="VENDAS" class="java.lang.Double"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -68,11 +44,11 @@ ORDER BY comp.data DESC;]]>
 				<text><![CDATA[Empório Cardoso]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="SubTitle" x="472" y="66" width="81" height="22" uuid="98d8170a-6e3d-4368-8240-9ccefb793035"/>
+				<reportElement style="SubTitle" x="497" y="66" width="56" height="22" uuid="98d8170a-6e3d-4368-8240-9ccefb793035"/>
 				<textElement>
 					<font fontName="Roboto Lt"/>
 				</textElement>
-				<text><![CDATA[Compras]]></text>
+				<text><![CDATA[Caixa]]></text>
 			</staticText>
 			<image>
 				<reportElement x="419" y="3" width="134" height="63" uuid="5c83f494-6c5a-4d47-b919-ed02eeb6eabb"/>
@@ -118,28 +94,25 @@ ORDER BY comp.data DESC;]]>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="0" y="1" width="28" height="20" uuid="78799a73-290f-4bfa-9ec7-43b6bb4e263c"/>
-				<text><![CDATA[Cód.]]></text>
+				<reportElement x="13" y="0" width="157" height="20" uuid="23881f3d-7ded-4210-b76d-ea6d434c9583"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Compras / Despesas]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="29" y="1" width="100" height="20" uuid="a9adea83-a4fe-49e5-b915-78f4b59d14ee"/>
-				<text><![CDATA[Data]]></text>
+				<reportElement x="210" y="2" width="142" height="20" uuid="2ac4cb90-b9bf-48af-9145-935ec3c8c7db"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Vendas / Receitas]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="131" y="1" width="79" height="20" uuid="bb848186-488f-43bb-b55d-f76a305dec19"/>
-				<text><![CDATA[Bruto]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="209" y="1" width="79" height="20" uuid="4bdb8ff8-a7aa-425f-922c-77d621f58b06"/>
-				<text><![CDATA[Desconto]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="289" y="1" width="74" height="20" uuid="638b95dd-b750-46a1-88cc-991a11e5d7c7"/>
-				<text><![CDATA[Líquido]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="366" y="1" width="187" height="20" uuid="a12acc04-9e4d-4558-a93c-c3b4c75200ce"/>
-				<text><![CDATA[Fornecedor]]></text>
+				<reportElement x="409" y="2" width="144" height="20" uuid="d53da0ce-f496-421e-87d5-2e7f79e0fcaa"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Último Fechamento]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -151,29 +124,26 @@ ORDER BY comp.data DESC;]]>
 					<pen lineWidth="0.5" lineColor="#999999"/>
 				</graphicElement>
 			</line>
-			<textField>
-				<reportElement x="0" y="0" width="28" height="20" uuid="ebb57f2e-f78b-467b-8024-60c76ea0f972"/>
-				<textFieldExpression><![CDATA[$F{cod_compra}]]></textFieldExpression>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="13" y="0" width="157" height="20" uuid="18331845-6886-420d-9478-8e9f5d85c886"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COMPRAS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="210" y="0" width="142" height="20" uuid="19f5387f-7a3d-4750-ab31-d0dc55033619"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VENDAS}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy HH.mm">
-				<reportElement x="29" y="0" width="100" height="20" uuid="805d2e16-9d06-4b83-b7fd-f8ceca9e9d4f"/>
-				<textFieldExpression><![CDATA[$F{data}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="131" y="0" width="79" height="20" uuid="ced33910-0576-46ac-a8e2-d058f0abb847"/>
-				<textFieldExpression><![CDATA[$F{total_bruto}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="209" y="0" width="79" height="20" uuid="cdfde2d2-0cde-494e-a7d2-60d1b9c40efe"/>
-				<textFieldExpression><![CDATA[$F{desconto}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="289" y="0" width="74" height="20" uuid="22157f2e-52d3-428d-90e7-366fc45ccfad"/>
-				<textFieldExpression><![CDATA[$F{total_liquido}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="366" y="0" width="187" height="20" uuid="81eb5210-7744-4a42-aae1-1f2ba63e65ea"/>
-				<textFieldExpression><![CDATA[$F{nome_fornecedor}]]></textFieldExpression>
+				<reportElement x="410" y="0" width="143" height="20" uuid="899cbd74-14d9-4f21-995b-db0b65a78ed6"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{prDataUltimoFechamentoCaixa}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
