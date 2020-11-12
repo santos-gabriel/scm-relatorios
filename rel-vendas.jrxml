@@ -163,15 +163,15 @@ ORDER BY vend.data_venda DESC]]>
 				<reportElement x="28" y="0" width="76" height="20" uuid="65e192e6-1f76-403e-989b-475c78faaf5b"/>
 				<textFieldExpression><![CDATA[$F{data_venda}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="¤ #,##0.00">
 				<reportElement x="104" y="0" width="70" height="20" uuid="6e48f170-1035-4fc5-a82c-434c2c5c706c"/>
 				<textFieldExpression><![CDATA[$F{bruto}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="¤ #,##0.00">
 				<reportElement x="175" y="0" width="70" height="20" uuid="c86a2850-a590-4d91-8ac4-9defda2f45bc"/>
 				<textFieldExpression><![CDATA[$F{desconto}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="¤ #,##0.00">
 				<reportElement x="249" y="0" width="70" height="20" uuid="8d99598f-5b3d-42ec-a548-23e5dc4e582e"/>
 				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
 			</textField>

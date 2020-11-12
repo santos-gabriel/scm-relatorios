@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel-compras" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3ca85c7a-410c-407d-be95-426e1a2958f9">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel-estoque-produtos" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3ca85c7a-410c-407d-be95-426e1a2958f9">
 	<property name="ireport.zoom" value="1.1"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -7,54 +7,53 @@
 	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
 	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
 	<style name="Detail" fontName="Arial" fontSize="12"/>
-	<parameter name="prDataIni" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="prDataFim" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="prFornecedor" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
 	<queryString>
-		<![CDATA[SELECT comp.*, forn.nome_fornecedor
-FROM   compras comp
-INNER JOIN fornecedores forn ON
-	forn.cod_fornecedor = comp.cod_fornecedor
-
-WHERE comp.ativo = true
-AND   CAST(comp.data AS DATE) >= $P{prDataIni}
-AND   CAST(comp.data AS DATE) <= $P{prDataFim}
-AND   $P!{prFornecedor}
-ORDER BY comp.data DESC;]]>
+		<![CDATA[SELECT prod.cod_produto, prod.desc_produto, SUM(prod.valor_custo) AS custo_total, SUM(prod.valor_venda) AS venda_total,
+       cat.cod_categoria, cat.desc_categoria AS categoria,
+       COUNT(ref.cod_rastreio_produto) AS qtde_estoque
+FROM   produtos prod
+INNER JOIN categorias cat ON
+	cat.cod_categoria = prod.cod_categoria
+LEFT JOIN referencia_produto ref ON
+	ref.cod_produto = prod.cod_produto
+WHERE prod.ativo = true
+AND   ref.ativo = true
+GROUP BY prod.cod_produto, cat.cod_categoria
+ORDER BY prod.desc_produto ASC]]>
 	</queryString>
-	<field name="cod_compra" class="java.lang.Integer">
+	<field name="cod_produto" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="cod_fornecedor" class="java.lang.Integer">
+	<field name="desc_produto" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="cod_usuario" class="java.lang.Integer">
+	<field name="custo_total" class="java.lang.Double"/>
+	<field name="venda_total" class="java.lang.Double"/>
+	<field name="cod_categoria" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="data" class="java.sql.Timestamp">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="total_bruto" class="java.lang.Double">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="desconto" class="java.lang.Double">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="total_liquido" class="java.lang.Double">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="ativo" class="java.lang.Boolean">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="nome_fornecedor" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
+	<field name="categoria" class="java.lang.String"/>
+	<field name="qtde_estoque" class="java.lang.Long"/>
+	<group name="Group1">
+		<groupExpression><![CDATA[$F{cod_categoria}]]></groupExpression>
+		<groupHeader>
+			<band height="28">
+				<ellipse>
+					<reportElement x="8" y="7" width="13" height="10" forecolor="#28842B" backcolor="#28842B" uuid="8fb0ebf1-f5e1-4efd-8d96-15462bd1317d"/>
+				</ellipse>
+				<textField>
+					<reportElement x="34" y="3" width="519" height="20" forecolor="#28842B" uuid="e6a78f24-c2bf-443a-947c-336b563c0218"/>
+					<textElement>
+						<font size="14" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{categoria}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="12"/>
+		</groupFooter>
+	</group>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -68,11 +67,11 @@ ORDER BY comp.data DESC;]]>
 				<text><![CDATA[Empório Cardoso]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="SubTitle" x="472" y="66" width="81" height="22" uuid="98d8170a-6e3d-4368-8240-9ccefb793035"/>
+				<reportElement style="SubTitle" x="377" y="66" width="176" height="22" uuid="98d8170a-6e3d-4368-8240-9ccefb793035"/>
 				<textElement>
 					<font fontName="Roboto Lt"/>
 				</textElement>
-				<text><![CDATA[Compras]]></text>
+				<text><![CDATA[Estoque de Produtos]]></text>
 			</staticText>
 			<image>
 				<reportElement x="419" y="3" width="134" height="63" uuid="5c83f494-6c5a-4d47-b919-ed02eeb6eabb"/>
@@ -118,28 +117,24 @@ ORDER BY comp.data DESC;]]>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="0" y="1" width="28" height="20" uuid="78799a73-290f-4bfa-9ec7-43b6bb4e263c"/>
+				<reportElement x="4" y="1" width="28" height="20" uuid="7b5923db-bdde-4ef3-9f4e-4bf31b8e65f3"/>
 				<text><![CDATA[Cód.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="29" y="1" width="100" height="20" uuid="a9adea83-a4fe-49e5-b915-78f4b59d14ee"/>
-				<text><![CDATA[Data]]></text>
+				<reportElement x="34" y="1" width="185" height="20" uuid="e0f864b8-da9d-4b8b-9e9a-e6caa99b7931"/>
+				<text><![CDATA[Produto]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="131" y="1" width="79" height="20" uuid="bb848186-488f-43bb-b55d-f76a305dec19"/>
-				<text><![CDATA[Bruto]]></text>
+				<reportElement x="220" y="1" width="81" height="20" uuid="0684baae-4fe7-41be-96e5-8b94bf143202"/>
+				<text><![CDATA[Qtde. em Estoque]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="209" y="1" width="79" height="20" uuid="4bdb8ff8-a7aa-425f-922c-77d621f58b06"/>
-				<text><![CDATA[Desconto]]></text>
+				<reportElement x="320" y="1" width="99" height="20" uuid="55745b3b-2471-4127-a001-1ab49d43c3eb"/>
+				<text><![CDATA[Valor Total d/ Custos]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="289" y="1" width="74" height="20" uuid="638b95dd-b750-46a1-88cc-991a11e5d7c7"/>
-				<text><![CDATA[Líquido]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="366" y="1" width="187" height="20" uuid="a12acc04-9e4d-4558-a93c-c3b4c75200ce"/>
-				<text><![CDATA[Fornecedor]]></text>
+				<reportElement x="435" y="1" width="118" height="20" uuid="2b631498-4915-49ef-a919-cb9619c630ce"/>
+				<text><![CDATA[Valor Total p/ Vendas]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -152,28 +147,24 @@ ORDER BY comp.data DESC;]]>
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement x="0" y="0" width="28" height="20" uuid="ebb57f2e-f78b-467b-8024-60c76ea0f972"/>
-				<textFieldExpression><![CDATA[$F{cod_compra}]]></textFieldExpression>
-			</textField>
-			<textField pattern="dd/MM/yyyy HH.mm">
-				<reportElement x="29" y="0" width="100" height="20" uuid="805d2e16-9d06-4b83-b7fd-f8ceca9e9d4f"/>
-				<textFieldExpression><![CDATA[$F{data}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="131" y="0" width="79" height="20" uuid="ced33910-0576-46ac-a8e2-d058f0abb847"/>
-				<textFieldExpression><![CDATA[$F{total_bruto}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="209" y="0" width="79" height="20" uuid="cdfde2d2-0cde-494e-a7d2-60d1b9c40efe"/>
-				<textFieldExpression><![CDATA[$F{desconto}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="289" y="0" width="74" height="20" uuid="22157f2e-52d3-428d-90e7-366fc45ccfad"/>
-				<textFieldExpression><![CDATA[$F{total_liquido}]]></textFieldExpression>
+				<reportElement x="4" y="0" width="28" height="20" uuid="da0538c8-1f7a-4ffa-8ee0-98b13a965850"/>
+				<textFieldExpression><![CDATA[$F{cod_produto}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="366" y="0" width="187" height="20" uuid="81eb5210-7744-4a42-aae1-1f2ba63e65ea"/>
-				<textFieldExpression><![CDATA[$F{nome_fornecedor}]]></textFieldExpression>
+				<reportElement x="34" y="0" width="185" height="20" uuid="0a7561b4-925a-4a13-80da-b44886ab29e8"/>
+				<textFieldExpression><![CDATA[$F{desc_produto}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement x="220" y="0" width="81" height="20" uuid="ae10b5de-ce41-4895-b345-2dd4de3a5d98"/>
+				<textFieldExpression><![CDATA[$F{qtde_estoque}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="320" y="0" width="99" height="20" uuid="40a8b738-c02c-4472-9900-c0561b0fda4c"/>
+				<textFieldExpression><![CDATA[$F{custo_total}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="435" y="0" width="118" height="20" uuid="a66d3d87-e3e4-4a37-a0ba-fd9c99b7e6f2"/>
+				<textFieldExpression><![CDATA[$F{venda_total}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel-compras" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3ca85c7a-410c-407d-be95-426e1a2958f9">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel-funcionarios-ativos" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3ca85c7a-410c-407d-be95-426e1a2958f9">
 	<property name="ireport.zoom" value="1.1"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -7,54 +7,84 @@
 	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
 	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
 	<style name="Detail" fontName="Arial" fontSize="12"/>
-	<parameter name="prDataIni" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="prDataFim" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="prFornecedor" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
 	<queryString>
-		<![CDATA[SELECT comp.*, forn.nome_fornecedor
-FROM   compras comp
-INNER JOIN fornecedores forn ON
-	forn.cod_fornecedor = comp.cod_fornecedor
-
-WHERE comp.ativo = true
-AND   CAST(comp.data AS DATE) >= $P{prDataIni}
-AND   CAST(comp.data AS DATE) <= $P{prDataFim}
-AND   $P!{prFornecedor}
-ORDER BY comp.data DESC;]]>
+		<![CDATA[SELECT f.cod_funcionario, f.nome_funcionario, f.cpf_funcionario, f.rg_funcionario, f.data_nascimento, f.whatsapp_funcionario,
+	   cit.cod_cidade, cit.descricao AS desc_cidade,
+       e.cod_estado, e.descricao AS desc_estado, e.uf,
+	   c.cod_cargo, c.desc_cargo
+FROM   funcionarios f
+INNER JOIN estados e ON
+	e.cod_estado = f.cod_estado
+INNER JOIN cidades cit ON
+	cit.cod_cidade = f.cod_cidade
+LEFT JOIN cargos c ON
+	c.cod_cargo = f.cod_cargo
+WHERE f.ativo = true
+ORDER BY f.nome_funcionario ASC]]>
 	</queryString>
-	<field name="cod_compra" class="java.lang.Integer">
+	<field name="cod_funcionario" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="cod_fornecedor" class="java.lang.Integer">
+	<field name="nome_funcionario" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="cod_usuario" class="java.lang.Integer">
+	<field name="cpf_funcionario" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="data" class="java.sql.Timestamp">
+	<field name="rg_funcionario" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="total_bruto" class="java.lang.Double">
+	<field name="data_nascimento" class="java.sql.Date">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="desconto" class="java.lang.Double">
+	<field name="whatsapp_funcionario" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="total_liquido" class="java.lang.Double">
+	<field name="cod_cidade" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="ativo" class="java.lang.Boolean">
+	<field name="desc_cidade" class="java.lang.String"/>
+	<field name="cod_estado" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="nome_fornecedor" class="java.lang.String">
+	<field name="desc_estado" class="java.lang.String"/>
+	<field name="uf" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
+	<field name="cod_cargo" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="desc_cargo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<group name="Group1">
+		<groupExpression><![CDATA[$F{desc_estado}]]></groupExpression>
+		<groupHeader>
+			<band height="28">
+				<ellipse>
+					<reportElement x="8" y="7" width="13" height="10" forecolor="#28842B" backcolor="#28842B" uuid="8fb0ebf1-f5e1-4efd-8d96-15462bd1317d"/>
+				</ellipse>
+				<textField>
+					<reportElement x="29" y="4" width="524" height="20" uuid="b4264eea-9612-4681-be9a-da0cf84866d3"/>
+					<textFieldExpression><![CDATA[$F{desc_estado}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="12"/>
+		</groupFooter>
+	</group>
+	<group name="Group2">
+		<groupExpression><![CDATA[$F{desc_cidade}]]></groupExpression>
+		<groupHeader>
+			<band height="27">
+				<textField>
+					<reportElement x="2" y="2" width="551" height="20" uuid="dd4bb072-8d54-48d3-808a-5f1972e9529e"/>
+					<textFieldExpression><![CDATA[$F{desc_cidade}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -68,11 +98,11 @@ ORDER BY comp.data DESC;]]>
 				<text><![CDATA[Empório Cardoso]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="SubTitle" x="472" y="66" width="81" height="22" uuid="98d8170a-6e3d-4368-8240-9ccefb793035"/>
+				<reportElement style="SubTitle" x="433" y="66" width="120" height="22" uuid="98d8170a-6e3d-4368-8240-9ccefb793035"/>
 				<textElement>
 					<font fontName="Roboto Lt"/>
 				</textElement>
-				<text><![CDATA[Compras]]></text>
+				<text><![CDATA[Funcionários]]></text>
 			</staticText>
 			<image>
 				<reportElement x="419" y="3" width="134" height="63" uuid="5c83f494-6c5a-4d47-b919-ed02eeb6eabb"/>
@@ -118,28 +148,32 @@ ORDER BY comp.data DESC;]]>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="0" y="1" width="28" height="20" uuid="78799a73-290f-4bfa-9ec7-43b6bb4e263c"/>
+				<reportElement x="3" y="1" width="26" height="20" uuid="f5f90e50-a6c8-4670-a17f-5bf1a85c898b"/>
 				<text><![CDATA[Cód.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="29" y="1" width="100" height="20" uuid="a9adea83-a4fe-49e5-b915-78f4b59d14ee"/>
-				<text><![CDATA[Data]]></text>
+				<reportElement x="31" y="1" width="128" height="20" uuid="096fbf5f-eabf-41ab-baaa-d6cc409d15e9"/>
+				<text><![CDATA[Funcionario]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="131" y="1" width="79" height="20" uuid="bb848186-488f-43bb-b55d-f76a305dec19"/>
-				<text><![CDATA[Bruto]]></text>
+				<reportElement x="163" y="1" width="111" height="20" uuid="0d7d9f45-281b-4ac1-aadf-1903fef0b094"/>
+				<text><![CDATA[Cargo]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="209" y="1" width="79" height="20" uuid="4bdb8ff8-a7aa-425f-922c-77d621f58b06"/>
-				<text><![CDATA[Desconto]]></text>
+				<reportElement x="274" y="1" width="56" height="20" uuid="c4193d15-82bd-4735-ad71-ca9f4d9eba7b"/>
+				<text><![CDATA[Nascimento]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="289" y="1" width="74" height="20" uuid="638b95dd-b750-46a1-88cc-991a11e5d7c7"/>
-				<text><![CDATA[Líquido]]></text>
+				<reportElement x="474" y="2" width="79" height="20" uuid="8ff09326-8c23-47e5-a37c-38b21ef616fd"/>
+				<text><![CDATA[Whatsapp]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="366" y="1" width="187" height="20" uuid="a12acc04-9e4d-4558-a93c-c3b4c75200ce"/>
-				<text><![CDATA[Fornecedor]]></text>
+				<reportElement x="397" y="2" width="77" height="20" uuid="2975ea8e-b5b7-41ba-b61e-fa4b3d2c0b63"/>
+				<text><![CDATA[CPF]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="330" y="1" width="64" height="20" uuid="6b5c3f8d-32db-4490-9178-9e10166f788d"/>
+				<text><![CDATA[RG]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -152,28 +186,50 @@ ORDER BY comp.data DESC;]]>
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement x="0" y="0" width="28" height="20" uuid="ebb57f2e-f78b-467b-8024-60c76ea0f972"/>
-				<textFieldExpression><![CDATA[$F{cod_compra}]]></textFieldExpression>
-			</textField>
-			<textField pattern="dd/MM/yyyy HH.mm">
-				<reportElement x="29" y="0" width="100" height="20" uuid="805d2e16-9d06-4b83-b7fd-f8ceca9e9d4f"/>
-				<textFieldExpression><![CDATA[$F{data}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="131" y="0" width="79" height="20" uuid="ced33910-0576-46ac-a8e2-d058f0abb847"/>
-				<textFieldExpression><![CDATA[$F{total_bruto}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="209" y="0" width="79" height="20" uuid="cdfde2d2-0cde-494e-a7d2-60d1b9c40efe"/>
-				<textFieldExpression><![CDATA[$F{desconto}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="289" y="0" width="74" height="20" uuid="22157f2e-52d3-428d-90e7-366fc45ccfad"/>
-				<textFieldExpression><![CDATA[$F{total_liquido}]]></textFieldExpression>
+				<reportElement x="3" y="0" width="26" height="20" uuid="1d0478d5-836a-4866-9c16-ab1647edd973"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cod_funcionario}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="366" y="0" width="187" height="20" uuid="81eb5210-7744-4a42-aae1-1f2ba63e65ea"/>
-				<textFieldExpression><![CDATA[$F{nome_fornecedor}]]></textFieldExpression>
+				<reportElement x="31" y="0" width="128" height="20" uuid="1a3478d6-d350-454d-b575-97bd7ceefd98"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome_funcionario}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="163" y="0" width="95" height="20" uuid="8272e29a-9a89-4714-9fcc-559fa8858615"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{desc_cargo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="274" y="0" width="56" height="20" uuid="6132f204-e013-43f7-9074-de8851a67123"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data_nascimento}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement x="474" y="0" width="79" height="20" uuid="74a59f1e-f112-4e4c-a912-a0df62255b6b"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{whatsapp_funcionario}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement x="396" y="0" width="77" height="20" uuid="e7932e1b-f3fa-48ee-a67c-e45a29472a26"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cpf_funcionario}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="330" y="0" width="64" height="20" uuid="37680513-ade6-4852-8328-fb61bb2c4ae5"/>
+				<textFieldExpression><![CDATA[$F{rg_funcionario}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
