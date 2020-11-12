@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel-clientes-fisicos-ativos" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3ca85c7a-410c-407d-be95-426e1a2958f9">
+	<property name="ireport.zoom" value="1.1"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" fontName="Arial" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
+	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<queryString>
+		<![CDATA[SELECT cli.*, cit.descricao AS cidade, est.descricao AS estado
+FROM   clientes cli
+INNER JOIN cidades cit ON
+	cit.cod_cidade = cli.cod_cidade
+INNER JOIN estados est ON
+	est.cod_estado = cli.cod_estado
+WHERE cli.ativo = true
+AND   (cli.cpf_cliente IS NOT NULL OR cli.cpf_cliente <> "")
+ORDER BY est.descricao, cit.descricao, cli.nome_cliente, cli.cod_cliente]]>
+	</queryString>
+	<field name="cod_cliente" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cod_usuario" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cod_estado" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cod_cidade" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nome_cliente" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="data_nascimento" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="rg_cliente" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cpf_cliente" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cnpj_cliente" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="whatsapp_cliente" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="telefone_cliente" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="endereco_cliente" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ativo" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cidade" class="java.lang.String"/>
+	<field name="estado" class="java.lang.String"/>
+	<group name="Group1">
+		<groupExpression><![CDATA[$F{estado}]]></groupExpression>
+		<groupHeader>
+			<band height="28">
+				<textField>
+					<reportElement x="46" y="3" width="507" height="20" forecolor="#28842B" uuid="1b114630-e601-4e4a-af2f-4922e3422893"/>
+					<textElement>
+						<font fontName="Arial" size="14" isBold="true" pdfEncoding="Cp1252"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
+				</textField>
+				<ellipse>
+					<reportElement x="8" y="7" width="13" height="10" forecolor="#28842B" backcolor="#28842B" uuid="8fb0ebf1-f5e1-4efd-8d96-15462bd1317d"/>
+				</ellipse>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="12"/>
+		</groupFooter>
+	</group>
+	<group name="Group2">
+		<groupExpression><![CDATA[$F{cidade}]]></groupExpression>
+		<groupHeader>
+			<band height="27">
+				<textField>
+					<reportElement x="2" y="3" width="552" height="20" forecolor="#666666" uuid="a8339ac2-a97d-4a54-945e-635770bdfdb2"/>
+					<textElement>
+						<font fontName="Arial" size="12" isBold="true" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cidade}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="99" splitType="Stretch">
+			<staticText>
+				<reportElement style="Title" x="100" y="9" width="263" height="33" uuid="909569af-5e7a-46e3-b6de-1c618fbf3944"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Bk" size="24" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Empório Cardoso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="SubTitle" x="419" y="66" width="134" height="22" uuid="98d8170a-6e3d-4368-8240-9ccefb793035"/>
+				<textElement>
+					<font fontName="Roboto Lt"/>
+				</textElement>
+				<text><![CDATA[Clientes Físicos]]></text>
+			</staticText>
+			<image>
+				<reportElement x="419" y="3" width="134" height="63" uuid="5c83f494-6c5a-4d47-b919-ed02eeb6eabb"/>
+				<imageExpression><![CDATA[getClass().getResourceAsStream("relatorios/img/logo-sistema-150-75.png")]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="2" y="3" width="98" height="96" uuid="f5e849be-f07d-4c78-a511-d6bed3917dcb"/>
+				<imageExpression><![CDATA[getClass().getResourceAsStream("relatorios/img/logo-emporio-cardoso.png")]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="103" y="46" width="19" height="20" uuid="0b63a293-db58-4304-a050-2320996c9f7f"/>
+				<imageExpression><![CDATA[getClass().getResourceAsStream("relatorios/img/instagram.png")]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="104" y="69" width="17" height="17" uuid="00b24fa5-f58f-4476-b37e-c0cf614606c9"/>
+				<imageExpression><![CDATA[getClass().getResourceAsStream("relatorios/img/phone.png")]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="134" y="42" width="124" height="22" uuid="10164c98-13e2-4223-b2fb-a07366797f98"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[@cardosoemporio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="134" y="67" width="124" height="20" uuid="d6a02ed0-6b7b-495d-aeed-b7d56b2e536c"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(64) 9 8130-8273]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="22" splitType="Stretch">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="2" y="18" width="555" height="1" uuid="d37d516f-8a89-4d32-8f10-ee18d5805333"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="2" y="3" width="35" height="15" uuid="fbb1049d-aaf3-495f-923a-f46464363ac0"/>
+				<textElement>
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cod.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="46" y="3" width="131" height="15" uuid="aa6f5aa2-d68c-4f7c-b598-11e05ccea9f2"/>
+				<textElement>
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nome]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="178" y="3" width="80" height="15" uuid="e39c5913-6de5-4243-b992-da14c8c568a5"/>
+				<textElement>
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nascimento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="261" y="3" width="100" height="15" uuid="26b39828-6f5c-4fe7-b404-55e746b18729"/>
+				<textElement>
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RG]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="363" y="3" width="100" height="15" uuid="be832313-9b3e-463d-81b8-debea36a216d"/>
+				<textElement>
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CPF]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="463" y="3" width="90" height="15" uuid="db9f0b46-0a36-49d8-b2de-e6730929f3d3"/>
+				<textElement>
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Whatsapp]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="-2" y="16" width="555" height="1" uuid="6d5378d7-8e8e-4b79-8966-86d910ab264a"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="1" y="2" width="36" height="13" uuid="14d78429-5633-4ed0-a3a5-ff4790978fd1"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cod_cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="46" y="2" width="131" height="13" uuid="789b6768-a236-4213-9853-48bb98eda5f1"/>
+				<textElement>
+					<font fontName="Arial" size="9" pdfEncoding="Cp1252"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome_cliente}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="178" y="2" width="80" height="13" uuid="da77e536-884f-470a-bc80-b5499dd9266c"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data_nascimento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="263" y="2" width="100" height="13" uuid="c7558f08-799e-4ee3-a192-f6212bc2834a"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rg_cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="363" y="2" width="100" height="13" uuid="5788992d-bc57-4c34-93f7-c27a8c302a13"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cpf_cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="463" y="2" width="90" height="13" uuid="fa3e0347-ca73-4869-815e-714099fcd99d"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{whatsapp_cliente}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="3" width="555" height="1" uuid="0a54f430-4459-4500-a0ad-f3a12966da9f"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement style="Column header" x="433" y="0" width="80" height="20" uuid="75829bdf-ef0a-4728-b782-8095e3482df9"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="Column header" x="513" y="0" width="40" height="20" uuid="72202abc-8731-432c-914c-7b5e687b2092"/>
+				<textElement>
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement style="Column header" x="0" y="0" width="197" height="20" uuid="6c8c654f-d23d-4bb7-84b6-3457e6a6d124"/>
+				<textElement>
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
